@@ -17,8 +17,10 @@ export class PlentinaService {
   }
 
   doShapesCollide(request: CollideShapesRequest): CollideShapesResponse {
+    console.log('--2', request);
     let result = false;
     if (request.firstShape.radius || request.secondShape.radius) {
+      console.log('--a');
       result = this.doesCircleAndCircleCollide(
         request.firstShape.x,
         request.firstShape.y,
@@ -28,9 +30,11 @@ export class PlentinaService {
         request.secondShape.radius,
       );
     } else if (
-      request.firstShape.radius ||
-      (request.secondShape.width && request.secondShape.height)
+      request.firstShape.radius &&
+      request.secondShape.width &&
+      request.secondShape.height
     ) {
+      console.log('--b');
       result = this.doesCircleAndRectCollide(
         request.firstShape.x,
         request.firstShape.y,
@@ -41,9 +45,11 @@ export class PlentinaService {
         request.secondShape.height,
       );
     } else if (
-      (request.firstShape.width && request.firstShape.height) ||
+      request.firstShape.width &&
+      request.firstShape.height &&
       request.secondShape.radius
     ) {
+      console.log('--c');
       result = this.doesCircleAndRectCollide(
         request.secondShape.x,
         request.secondShape.y,
@@ -54,8 +60,10 @@ export class PlentinaService {
         request.firstShape.height,
       );
     } else if (
-      (request.firstShape.width && request.firstShape.height) ||
-      (request.secondShape.width && request.secondShape.height)
+      request.firstShape.width &&
+      request.firstShape.height &&
+      request.secondShape.width &&
+      request.secondShape.height
     ) {
       result = this.doesRectAndRectCollide(
         request.firstShape.x,
