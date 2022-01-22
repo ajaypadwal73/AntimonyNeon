@@ -16,10 +16,8 @@ export class Circle implements Shape {
     this.center = <Point>{ x, y };
     this.type = Type.CIRCLE;
     this.radius = radius;
-    console.log('Whats happening dude');
   }
   collides(other: Shape): boolean {
-    console.log('--hi ajay 2', other, this);
     switch (other.type) {
       case Type.CIRCLE:
         const circle2 = <Circle>(<any>other);

@@ -53,9 +53,8 @@ export const doesCircleAndLineCollide = (
   const { x: a, y: b } = circle1.center;
   //If center collides with the line
   if (!((y1 - y2) * a + (x2 - x1) * b + x1 * (y2 - y1) + y1 * (x1 - x2))) {
-    const distance1 = distanceBetween(line1.center, line1.center);
+    const distance1 = distanceBetween(line1.center, circle1.center);
     const distance2 = distanceBetween(line1.point2, circle1.center);
-
     return distance1 <= circle1.radius || distance2 <= circle1.radius;
   }
   const distanceBetweenLineAndCircle = Math.abs(
@@ -130,7 +129,7 @@ export const doesLineAndLineCollide = (line1: Line, line2: Line): boolean => {
     x: intersectionX,
     y: intersectionY,
   };
-
+  console.log(`Intersection point: ${intersectionPoint}`);
   const distance1 = parseFloat(
     distanceBetween(line1.center, intersectionPoint).toFixed(2),
   );
@@ -150,9 +149,16 @@ export const doesLineAndLineCollide = (line1: Line, line2: Line): boolean => {
   const lengthOfLine2 = parseFloat(
     distanceBetween(line2.center, line2.point2).toFixed(2),
   );
-
-  console.log(distance1, distance2, distance3, distance4);
-  console.log(lengthOfLine1, lengthOfLine2);
+  console.log(
+    `Length of line ${lengthOfLine1}, Sum: ${
+      distance1 + distance2
+    } Broken Lengths ${distance1} ${distance2}`,
+  );
+  console.log(
+    `Length of line ${lengthOfLine2}, Sum: ${
+      distance3 + distance4
+    } Broken Lengths ${distance3} ${distance4}`,
+  );
 
   const flag: boolean =
     lengthOfLine1 === distance1 + distance2 &&
