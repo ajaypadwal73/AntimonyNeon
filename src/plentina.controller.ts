@@ -5,9 +5,9 @@ import { PlentinaService } from './plentina.service';
 export interface ShapeDTO {
   x: number;
   y: number;
-  radius?: number;
-  width?: number;
-  height?: number;
+  radius: number;
+  width: number;
+  height: number;
   a?: number;
   b?: number;
 }

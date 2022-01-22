@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Circle } from './models/circle.model';
 import { Line } from './models/line.model';
 import { Rect } from './models/rect.model';
+import { getGeometry } from './controllers/helpers';
 import {
   CollideShapesRequest,
   CollideShapesResponse,
+  ShapeDTO,
 } from './plentina.controller';
+import { Type } from './models/shape.model';
 
 @Injectable()
 export class PlentinaService {
@@ -20,16 +23,12 @@ export class PlentinaService {
   doShapesCollide(request: CollideShapesRequest): CollideShapesResponse {
     console.log('--2', request);
     let result = false;
-    if (request.firstShape.radius && request.secondShape.radius) {
+    const { firstShape, secondShape } = request;
+    const geometryType1 = getGeometry(firstShape);
+    const geometryType2 = getGeometry(secondShape);
+    if (geometryType1 === Type.CIRCLE && geometryType2 === Type.CIRCLE) {
       console.log('--a');
-      result = this.doesCircleAndCircleCollide(
-        request.firstShape.x,
-        request.firstShape.y,
-        request.firstShape.radius,
-        request.secondShape.x,
-        request.secondShape.y,
-        request.secondShape.radius,
-      );
+      result = this.doesCircleAndCircleCollide(firstShape, secondShape);
     } else if (
       request.firstShape.radius &&
       request.secondShape.width &&
@@ -189,15 +188,15 @@ export class PlentinaService {
    * @returns a boolean if they collide or not
    */
   doesCircleAndCircleCollide(
-    x1: number,
-    y1: number,
-    r1: number,
-    x2: number,
-    y2: number,
-    r2: number,
+    firstShape: ShapeDTO,
+    secondShape: ShapeDTO,
   ): boolean {
-    const circle1 = new Circle(x1, y1, r1);
-    const circle2 = new Circle(x2, y2, r2);
+    const circle1 = new Circle(firstShape.x, firstShape.y, firstShape.radius);
+    const circle2 = new Circle(
+      secondShape.x,
+      secondShape.y,
+      secondShape.radius,
+    );
 
     return circle1.collides(circle2);
   }
