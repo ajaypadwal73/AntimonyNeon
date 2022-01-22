@@ -114,14 +114,34 @@ export const doesLineAndLineCollide = (line1: Line, line2: Line): boolean => {
   const { x: a1, y: b1 } = line2.center;
   const { x: a2, y: b2 } = line2.point2;
 
-  let val1: any = (y1 - y2) / (x1 - x2);
-  let val2: any = (b1 - b2) / (a1 - a2);
+  const lengthOfLine1 = parseFloat(
+    distanceBetween(line1.center, line1.point2).toFixed(2),
+  );
+  const lengthOfLine2 = parseFloat(
+    distanceBetween(line2.center, line2.point2).toFixed(2),
+  );
 
-  val1 = !Number.isFinite(val1) ? 0 : val1;
-  val2 = !Number.isFinite(val2) ? 0 : val2;
+  let slope1: any = (y1 - y2) / (x1 - x2);
+  let slope2: any = (b1 - b2) / (a1 - a2);
+
+  slope1 = !Number.isFinite(slope1) ? 0 : slope1;
+  slope2 = !Number.isFinite(slope2) ? 0 : slope2;
+
+  // Slopes are equal, then line is collinear
+  if (slope1 === slope2) {
+    const distanceA = parseFloat(
+      distanceBetween(line1.center, line2.center).toFixed(2),
+    );
+    const distanceB = parseFloat(
+      distanceBetween(line1.center, line2.point2).toFixed(2),
+    );
+    return distanceA <= lengthOfLine1 || distanceB <= lengthOfLine2;
+  }
 
   const intersectionX: number =
-    val1 - val2 === 0 ? 0 : (val1 * x1 - y1 - val2 * a1 + b1) / (val1 - val2);
+    slope1 - slope2 === 0
+      ? 0
+      : (slope1 * x1 - y1 - slope2 * a1 + b1) / (slope1 - slope2);
   const intersectionY: number =
     x1 - x2 === 0 ? 0 : ((y1 - y2) * (intersectionX - x1)) / (x1 - x2) + y1;
 
@@ -129,7 +149,9 @@ export const doesLineAndLineCollide = (line1: Line, line2: Line): boolean => {
     x: intersectionX,
     y: intersectionY,
   };
-  console.log(`Intersection point: ${intersectionPoint}`);
+  console.log(
+    `Intersection point: ${intersectionPoint.x}, ${intersectionPoint.y}`,
+  );
   const distance1 = parseFloat(
     distanceBetween(line1.center, intersectionPoint).toFixed(2),
   );
@@ -143,12 +165,6 @@ export const doesLineAndLineCollide = (line1: Line, line2: Line): boolean => {
     distanceBetween(line2.point2, intersectionPoint).toFixed(2),
   );
 
-  const lengthOfLine1 = parseFloat(
-    distanceBetween(line1.center, line1.point2).toFixed(2),
-  );
-  const lengthOfLine2 = parseFloat(
-    distanceBetween(line2.center, line2.point2).toFixed(2),
-  );
   console.log(
     `Length of line ${lengthOfLine1}, Sum: ${
       distance1 + distance2
