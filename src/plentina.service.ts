@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Circle } from './models/circle.model';
+import { Line } from './models/line.model';
 import { Rect } from './models/rect.model';
 import {
   CollideShapesRequest,
@@ -19,7 +20,7 @@ export class PlentinaService {
   doShapesCollide(request: CollideShapesRequest): CollideShapesResponse {
     console.log('--2', request);
     let result = false;
-    if (request.firstShape.radius || request.secondShape.radius) {
+    if (request.firstShape.radius && request.secondShape.radius) {
       console.log('--a');
       result = this.doesCircleAndCircleCollide(
         request.firstShape.x,
@@ -65,6 +66,7 @@ export class PlentinaService {
       request.secondShape.width &&
       request.secondShape.height
     ) {
+      console.log('--d');
       result = this.doesRectAndRectCollide(
         request.firstShape.x,
         request.firstShape.y,
@@ -74,6 +76,70 @@ export class PlentinaService {
         request.secondShape.y,
         request.secondShape.width,
         request.secondShape.height,
+      );
+    } else if (
+      request.firstShape.x !== undefined &&
+      request.firstShape.y !== undefined &&
+      request.firstShape.a !== undefined &&
+      request.firstShape.b !== undefined &&
+      request.secondShape.x !== undefined &&
+      request.secondShape.y !== undefined &&
+      request.secondShape.a !== undefined &&
+      request.secondShape.b !== undefined
+    ) {
+      console.log('---e');
+      console.log('--loine line');
+      result = this.doesLineAndLineCollide(
+        request.firstShape.x,
+        request.firstShape.y,
+        request.firstShape.a,
+        request.firstShape.b,
+        request.secondShape.x,
+        request.secondShape.y,
+        request.secondShape.a,
+        request.secondShape.b,
+      );
+    } else if (
+      request.firstShape.x !== undefined &&
+      request.firstShape.y !== undefined &&
+      request.firstShape.a !== undefined &&
+      request.firstShape.b !== undefined &&
+      request.secondShape.x !== undefined &&
+      request.secondShape.y !== undefined &&
+      request.secondShape.width !== undefined &&
+      request.secondShape.height !== undefined
+    ) {
+      console.log('---e');
+      console.log('--123');
+      result = this.doesLineAndRectCollide(
+        request.firstShape.x,
+        request.firstShape.y,
+        request.firstShape.a,
+        request.firstShape.b,
+        request.secondShape.x,
+        request.secondShape.y,
+        request.secondShape.width,
+        request.secondShape.height,
+      );
+    } else if (
+      request.firstShape.x !== undefined &&
+      request.firstShape.y !== undefined &&
+      request.firstShape.a !== undefined &&
+      request.firstShape.b !== undefined &&
+      request.secondShape.x !== undefined &&
+      request.secondShape.y !== undefined &&
+      request.secondShape.radius !== undefined
+    ) {
+      console.log('---e');
+      console.log('--123');
+      result = this.doesLineAndCircleCollide(
+        request.firstShape.x,
+        request.firstShape.y,
+        request.firstShape.a,
+        request.firstShape.b,
+        request.secondShape.x,
+        request.secondShape.y,
+        request.secondShape.radius,
       );
     } else {
       throw new Error('Invalid shapes!');
@@ -162,5 +228,52 @@ export class PlentinaService {
     const rect2 = new Rect(x2, y2, w2, h2);
 
     return rect1.collides(rect2);
+  }
+
+  doesLineAndLineCollide(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    a1: number,
+    b1: number,
+    a2: number,
+    b2: number,
+  ): boolean {
+    const line1 = new Line(x1, y1, x2, y2);
+    const line2 = new Line(a1, b1, a2, b2);
+
+    return line1.collides(line2);
+  }
+
+  doesLineAndRectCollide(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    a1: number,
+    b1: number,
+    w1: number,
+    h1: number,
+  ): boolean {
+    const line = new Line(x1, y1, x2, y2);
+    const rect = new Rect(a1, b1, w1, h1);
+
+    return line.collides(rect);
+  }
+
+  doesLineAndCircleCollide(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    a1: number,
+    b1: number,
+    r: number,
+  ): boolean {
+    const line = new Line(x1, y1, x2, y2);
+    const circle = new Circle(a1, b1, r);
+
+    return line.collides(circle);
   }
 }

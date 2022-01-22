@@ -1,7 +1,9 @@
 import { Circle } from './circle.model';
-import { distanceBetween, Point, Shape, Type } from './shape.model';
+import { circleAndRectangleCollision } from './circle.model';
+import { Line, lineWithLine } from './line.model';
+import { Point, Shape, Type } from './shape.model';
 
-const getRectVertices = (rectangle: Rect) => {
+export const getRectVertices = (rectangle: Rect) => {
   const { center, width, height } = rectangle;
   const point1: Point = {
     x: center.x - width / 2,
@@ -22,6 +24,47 @@ const getRectVertices = (rectangle: Rect) => {
   return { point1, point2, point3, point4 };
 };
 
+export const rectAndRectCollision = (rect1: Rect, rect2: Rect) => {
+  const rect1Vertices = getRectVertices(rect1);
+  const rect2Vertices = getRectVertices(rect2);
+  if (
+    (rect2Vertices.point1.x <= rect1Vertices.point2.x &&
+      rect2Vertices.point1.x >= rect1Vertices.point4.x &&
+      rect2Vertices.point1.y <= rect1Vertices.point2.y &&
+      rect2Vertices.point1.y >= rect1Vertices.point4.y) ||
+    (rect2Vertices.point2.x <= rect1Vertices.point2.x &&
+      rect2Vertices.point2.x >= rect1Vertices.point4.x &&
+      rect2Vertices.point2.y <= rect1Vertices.point2.y &&
+      rect2Vertices.point2.y >= rect1Vertices.point4.y) ||
+    (rect2Vertices.point3.x <= rect1Vertices.point2.x &&
+      rect2Vertices.point3.x >= rect1Vertices.point4.x &&
+      rect2Vertices.point3.y <= rect1Vertices.point2.y &&
+      rect2Vertices.point3.y >= rect1Vertices.point4.y) ||
+    (rect2Vertices.point4.x <= rect1Vertices.point2.x &&
+      rect2Vertices.point4.x >= rect1Vertices.point4.x &&
+      rect2Vertices.point4.y <= rect1Vertices.point2.y &&
+      rect2Vertices.point4.y >= rect1Vertices.point4.y)
+  ) {
+    return true;
+  }
+  return false;
+};
+
+export const rectAndLineCollision = (rect1: Rect, line: Line): boolean => {
+  const { point1, point2, point3, point4 } = getRectVertices(this);
+  const line1: Line = new Line(point1.x, point1.y, point2.x, point2.y);
+  const line2: Line = new Line(point2.x, point2.y, point3.x, point3.y);
+  const line3: Line = new Line(point3.x, point3.y, point4.x, point4.y);
+  const line4: Line = new Line(point4.x, point4.y, point1.x, point1.y);
+
+  return (
+    lineWithLine(line1, line) ||
+    lineWithLine(line2, line) ||
+    lineWithLine(line3, line) ||
+    lineWithLine(line4, line)
+  );
+};
+
 export class Rect implements Shape {
   readonly center: Point;
   readonly width: number;
@@ -38,40 +81,14 @@ export class Rect implements Shape {
   collides(other: Shape): boolean {
     switch (other.type) {
       case Type.CIRCLE:
-        // throw new Error('Implement Rectangle to Circle collision checking');
-        const circle: Circle = Circle.fromShape(other);
-        const rect = getRectVertices(this);
-        const nearestPoint: Point = {
-          x: Math.max(rect.point4.x, Math.min(circle.center.x, rect.point2.x)),
-          y: Math.max(rect.point4.y, Math.min(circle.center.y, rect.point2.y)),
-        };
-
-        return distanceBetween(nearestPoint, circle.center) <= circle.radius;
+        const circle1: Circle = <Circle>(<any>other);
+        return circleAndRectangleCollision(circle1, this);
       case Type.RECT:
-        const _other = <Rect>(<any>other);
-        const rect1 = getRectVertices(this);
-        const rect2 = getRectVertices(_other);
-        if (
-          // (rect2.point1.x <= rect1.point2.x &&
-          //   rect2.point1.x >= rect1.point4.x &&
-          //   rect2.point1.y <= rect1.point2.y &&
-          //   rect2.point1.y >= rect1.point4.y) ||
-          (rect2.point2.x <= rect1.point2.x &&
-            rect2.point2.x >= rect1.point4.x &&
-            rect2.point2.y <= rect1.point2.y &&
-            rect2.point2.y >= rect1.point4.y) ||
-          // (rect2.point3.x <= rect1.point2.x &&
-          //   rect2.point3.x >= rect1.point4.x &&
-          //   rect2.point3.y <= rect1.point2.y &&
-          //   rect2.point3.y >= rect1.point4.y) ||
-          (rect2.point4.x <= rect1.point2.x &&
-            rect2.point4.x >= rect1.point4.x &&
-            rect2.point4.y <= rect1.point2.y &&
-            rect2.point4.y >= rect1.point4.y)
-        ) {
-          return true;
-        }
-        return false;
+        const rect2 = <Rect>(<any>other);
+        return rectAndRectCollision(this, rect2);
+      case Type.LINE:
+        const line: Line = <Line>(<any>other);
+        return rectAndLineCollision(this, line);
       default:
         throw new Error(`Invalid shape type!`);
     }
