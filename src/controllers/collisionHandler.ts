@@ -18,27 +18,23 @@ export const doesCircleandRectangleCollide = (
   rect1: Rect,
 ): boolean => {
   console.log('in doesCircleandRectangleCollide handler');
-  const target: Point = rect1.center;
-  const pointDistance: Point = <Point>{
-    x: Math.abs(circle1.center.x - target.x),
-    y: Math.abs(circle1.center.y - target.y),
-  };
+  const { point1, point2, point3, point4 } = getRectVertices(rect1);
+  const line1: Line = new Line(point1.x, point1.y, point2.x, point2.y);
+  const line2: Line = new Line(point2.x, point2.y, point3.x, point3.y);
+  const line3: Line = new Line(point3.x, point3.y, point4.x, point4.y);
+  const line4: Line = new Line(point4.x, point4.y, point1.x, point1.y);
 
-  if (pointDistance.x > rect1.width / 2 + circle1.radius) {
-    return false;
-  } else if (pointDistance.y > rect1.height / 2 + circle1.radius) {
-    return false;
-  } else if (pointDistance.x <= rect1.width / 2) {
+  //Check if circle lies inside the rectangle
+  const { x, y } = circle1.center;
+  if (x >= point4.x && y >= point4.y && x <= point2.x && y <= point2.y)
     return true;
-  } else if (pointDistance.y <= rect1.height / 2) {
-    return true;
-  }
 
-  const circleToRectDistance =
-    Math.pow(pointDistance.x - rect1.width / 2, 2) +
-    Math.pow(pointDistance.y - rect1.height / 2, 2);
-
-  return circleToRectDistance <= Math.pow(circle1.radius, 2);
+  return (
+    doesCircleAndLineCollide(circle1, line1) ||
+    doesCircleAndLineCollide(circle1, line2) ||
+    doesCircleAndLineCollide(circle1, line3) ||
+    doesCircleAndLineCollide(circle1, line4)
+  );
 };
 
 export const doesCircleAndLineCollide = (
@@ -60,6 +56,9 @@ export const doesCircleAndLineCollide = (
   const distanceBetweenLineAndCircle = Math.abs(
     ((y1 - y2) * a + (x2 - x1) * b + x1 * (y2 - y1) + y1 * (x1 - x2)) /
       Math.sqrt((y1 - y2) * (y1 - y2) + (x2 - x1) * (x2 - x1)),
+  );
+  console.log(
+    `Shortest distance: ${distanceBetweenLineAndCircle} Radius: ${circle1.radius}`,
   );
   return distanceBetweenLineAndCircle <= circle1.radius;
 };
