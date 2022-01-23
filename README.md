@@ -1,5 +1,4 @@
 # AntimonyNeon
-Plentina assessment
 #### Steps
 -  Clone the repo
 - npm install
