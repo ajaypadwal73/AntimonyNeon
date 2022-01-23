@@ -1,10 +1,7 @@
 # AntimonyNeon
 Plentina assessment
 #### Steps
-- A
- - Clone the repo
- - npm install
- - Download postman collection
- - test
-- B
-  - npm run test
+-  Clone the repo
+- npm install
+- Download postman collection
+- test using samples or npm run test
